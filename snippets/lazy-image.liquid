@@ -1,0 +1,29 @@
+{% unless section.settings.image == blank %}
+  <picture>
+    <source
+      media="(min-width:1200px)"
+      data-srcset="{{ section.settings.image | image_url: width: 700, class: 'lazyload' }}"
+    >
+    <source
+      media="(min-width:769px)"
+      data-srcset="{{ section.settings.image | image_url: width: 800, class: 'lazyload' }}"
+    >
+    {% unless section.settings.image_mobile == blank %}
+      {{
+        section.settings.image_mobile
+        | image_url: width: section.settings.image_mobile.width
+        | image_tag: class: 'lazyload'
+        | replace: 'src', 'src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src'
+        | replace: 'srcset', 'data-srcset'
+      }}
+    {% else %}
+      {{
+        section.settings.image
+        | image_url: width: 500, crop: 'top'
+        | image_tag: class: 'lazyload'
+        | replace: 'src', 'src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src'
+        | replace: 'srcset', 'data-srcset'
+      }}
+    {% endunless %}
+  </picture>
+{% endunless %}

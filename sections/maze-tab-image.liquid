@@ -1,0 +1,614 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  @keyframes spin{
+      from {
+        transform: rotate(0deg);
+      } to {
+          transform: rotate(360deg);
+      }
+    }
+    #shopify-section-{{id}} {
+      box-sizing: border-box;
+      margin-top: {{section.settings.margin_top | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+      padding-top: {{section.settings.padding_top | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+      max-width: 100vw;
+      overflow:hidden;
+    }
+
+    @media(max-width: 768px) {
+      #shopify-section-{{id}} {
+        margin-top: {{section.settings.margin_top_m | append: 'px'}};
+        margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+        padding-top: {{section.settings.padding_top_m | append: 'px'}};
+        padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+      }
+    }
+
+    .wrapper-{{ id }} {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 40px;
+
+      @media(max-width: 768px) {
+        grid-template-columns: 1fr;
+        grid-gap: 32px;
+        box-sizing: border-box;
+      }
+
+      .img-wrapper{
+        position: relative;
+        @media(max-width: 768px) {
+          grid-row: {{ section.settings.image_position_mobile }};
+          grid-columns: 1/2;
+        }
+        img{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        svg{
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,10%);
+        }
+        .corner-icon {
+          position: absolute;
+          width: 146px;
+          height: 146px;
+          top: -40px;
+          {{section.settings.icon_position}}: -50px;
+
+          .background,
+          .forground{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+          .background{
+            z-index: 1;
+          }
+          .forground{
+            z-index: 2;
+            animation-name: spin;
+            animation-duration: 7000ms;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+          }
+          
+
+          @media(max-width: 768px) {
+            bottom: -40px;
+            top: unset;
+            {{section.settings.icon_position_mobile}}: -13px;
+            {% if section.settings.icon_position_mobile == "none" %}
+              display: none;
+            {% endif %}
+          }
+        }
+      }
+
+      .text-wrapper {
+        display: flex;
+        flex-direction: column;
+        .sub-title{
+          color: #000;
+          font-size: 24px;
+          font-style: normal;
+          line-height: 24px;
+          letter-spacing: -0.48px;
+          margin: 0 0 12px 0;
+        }
+        .title{
+          color: #000;
+          font-size: 72px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 66px;
+          text-transform: capitalize;
+          margin: 0 0 12px 0;
+        }
+        .text{
+          color: #000;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 24px;
+          letter-spacing: -0.32px;
+          margin-bottom: 24px;
+        }
+        .text p:first-child{
+          margin-top: 0;
+        }
+        .text p:last-child{
+          margin-bottom: 0;
+        }
+        .buttonX{
+          color: #FFF;
+          text-align: center;
+          font-size: 20px;
+          font-style: normal;
+          line-height: 1;
+          text-transform: uppercase;
+          display: block;
+          width: max-content;
+          box-sizing: border-box;
+          padding: 20px 30px;
+          min-width: 196px;
+          text-align: center;
+          background: #D41317;
+          text-decoration: none;
+        }
+
+        @media(max-width: 768px) {
+          .sub-title{
+            font-size: 20px;
+            line-height: 20px;
+            margin-bottom: 8px;
+          }
+          .title{
+            font-size: 40px;
+            line-height: 44px;
+            margin-bottom: 12px;
+          }
+          .text{
+            font-size: 12px;
+            line-height: 16px;
+            margin-bottom: 0px;
+          }
+          .buttonX{
+            width: 100%;
+            font-size: 20px;
+            padding: 14px 0px;
+            margin-top: 16px;
+          }
+        }
+      }
+    }
+   /* Tab CSS Start */
+    .wrapper-{{ id }} {
+
+.tab--{{ section.id }} {
+    color: #6B7280;
+    font-size: 22px;
+    line-height: 24px;
+    border-radius: 4px;
+    border: 1px solid #fff;
+    background: #fff;
+    padding: 8px 24px;
+    @media screen and (max-width: 768px){
+      font-size: 16px;
+      line-height: 20px;
+      padding: 8px 16px;
+    }
+}
+.tab--{{ section.id }}.active {
+    color: #000;
+    border: 1px solid #EBEBEB;
+    background: #F5F5F5;
+}
+
+  .tab-content-{{ section.id }}{
+    display:none;
+    animation: fadein .8s;
+  }
+  .tab-content-{{ section.id }}.active{
+    display:block;
+    margin-top: 40px;
+    @media screen and (max-width: 768px){
+      margin-top: 24px;
+    }
+  }
+  @keyframes fadein {
+      from {
+          opacity:0;
+      }
+      to {
+          opacity:1;
+      }
+  }
+
+
+    }
+   /* Tab CSS End */
+</style>
+
+<div class="sec-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+  {% if settings.animations_reveal_on_scroll %} data-cascade {% endif %}
+>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+      <div class="tabs-wrapper">
+        <div class="tab-navigation">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'text' %}
+                <button data-title="{{ block.settings.title }}" class="tab--{{ section.id }} {% if forloop.first %} active {% endif %} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }};"
+                {% endif %}
+                >
+                  {{ block.settings.title }}
+                </button>
+            {% endcase %}
+          {% endfor %}
+        </div>
+
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'text' %}
+              <div
+                class="text-wrapper tab-content-{{ section.id }}  {% if forloop.first %} active {% endif %} "
+                data-title="{{ block.settings.title }}"
+                style="justify-content: {{ block.settings.alignment }}"
+              >
+                {% unless block.settings.sub_title == blank %}
+                  <h3 class="sub-title">{{ block.settings.sub_title }}</h3>
+                {% endunless %}
+                {% unless block.settings.title == blank %}
+                  <h2 class="title">{{ block.settings.title }}</h2>
+                {% endunless %}
+                {% unless block.settings.text == blank %}
+                  <div class="text rethink-sans">{{ block.settings.text }}</div>
+                {% endunless %}
+                {% unless block.settings.button_text == blank %}
+                  <a class="buttonX" href="{{ block.settings.button_url }}">{{ block.settings.button_text }}</a>
+                {% endunless %}
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'image' %}
+            <div class="img-wrapper">
+              {% unless block.settings.image_desktop == blank %}
+                <picture>
+                  <source
+                    media="(min-width:1920px)"
+                    srcset="{{ block.settings.image_desktop | image_url: width: 1900 }}"
+                  >
+                  <source
+                    media="(min-width:1600px)"
+                    srcset="{{ block.settings.image_desktop | image_url: width: 1600 }}"
+                  >
+                  <source
+                    media="(min-width:1440px)"
+                    srcset="{{ block.settings.image_desktop | image_url: width: 1400 }}"
+                  >
+                  <source
+                    media="(min-width:1024px)"
+                    srcset="{{ block.settings.image_desktop | image_url: width: 1000 }}"
+                  >
+                  <source media="(min-width:650px)" srcset="{{ block.settings.image_desktop | image_url: width: 700 }}">
+                  {% unless block.settings.image_mobile == blank %}
+                    {{ block.settings.image_mobile | image_url: width: 400 | image_tag: loading: 'lazy' }}
+                  {% else %}
+                    {{ block.settings.image_desktop | image_url: width: 400 | image_tag: loading: 'lazy' }}
+                  {% endunless %}
+                </picture>
+              {% else %}
+                {{ 'image' | placeholder_svg_tag }}
+              {% endunless %}
+              {% if section.settings.active_icon %}
+                <div class="corner-icon">
+                  {% unless settings.icon_background == blank %}
+                    {{
+                      settings.icon_background
+                      | image_url: width: 146
+                      | image_tag: loading: 'lazy', class: 'background'
+                    }}
+                  {% endunless %}
+                  {% unless settings.icon_forground == blank %}
+                    {{
+                      settings.icon_forground
+                      | image_url: width: 146
+                      | image_tag: loading: 'lazy', class: 'forground'
+                    }}
+                  {% endunless %}
+                </div>
+              {% endif %}
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab--{{ section.id }}')
+  const tabContents = document.querySelectorAll('.tab-content-{{ section.id }}')
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(tab => {
+        tab.classList.remove('active')
+      })
+      tabContents.forEach(tabContent => {
+        if(tabContent.dataset.title != tab.dataset.title){
+          tabContent.classList.remove('active')
+        } else {
+          tabContent.classList.add('active')
+        }
+      })
+      tab.classList.add('active')
+    })
+  })
+</script>
+
+{% schema %}
+{
+  "name": "Maze Tab Image Grid",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Image Corner Icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "active_icon",
+      "label": "Active Corner Icon",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon Position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Top Left"
+        },
+        {
+          "value": "right",
+          "label": "Top Right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "icon_position_mobile",
+      "label": "Icon Position Mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "image_position_mobile",
+      "label": "Image Position Mobile",
+      "options": [
+        {
+          "value": "1/2",
+          "label": "Top"
+        },
+        {
+          "value": "2/3",
+          "label": "Bottom"
+        }
+      ],
+      "default": "1/2"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Desktop Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile Image"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Vertical alignment",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "center",
+              "label": "Middle"
+            },
+            {
+              "value": "end",
+              "label": "Bottom"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "textarea",
+          "id": "sub_title",
+          "label": "Sub Title",
+          "default": "Sub Title"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "color_background",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title Color",
+          "default": "#212121"
+        },
+        {
+          "type": "color",
+          "id": "title_span_color",
+          "label": "Title Span Color",
+          "default": "#E60000"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#212121"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Maze Tab Image Grid"
+    }
+  ]
+}
+{% endschema %}

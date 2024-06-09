@@ -1,0 +1,37 @@
+<style>
+  .checkout-promo-bar {
+    padding-block: 15px;
+    color: #000;
+  }
+  .checkout-promo-bar span {
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 115%;
+  }
+  .checkout-promo-bar:nth-of-type(n+2) {
+    display: none;
+  }
+</style>
+{% assign free_ship = settings.amount | plus: 0 %}    
+
+{% if cart.total_price < free_ship %}
+
+    {% assign cartTotal = cart.total_price | money_without_currency %}
+
+    {% assign toFreeShip = cartTotal | times: 100 | minus: free_ship | abs %}
+
+    <div class="row full-width checkout-promo-bar">
+
+      <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true"></i> You are {% if toFreeShip < 500 %}only{% endif %} $<span>{{ toFreeShip | money_without_currency }}</span> away from Free Standard Shipping.
+
+    </div>
+
+{% else %}
+
+    <div class="row full-width checkout-promo-bar">
+
+      <i class="fa fa-thumbs-o-up fa-lg" aria-hidden="true"></i> Awesome! Your order qualifies for Free Standard Shipping
+
+    </div>
+
+{% endif %}

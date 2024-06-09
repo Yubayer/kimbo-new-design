@@ -1,0 +1,214 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    max-width: 100vw;
+    overflow: hidden;
+
+  }
+  .heading-{{ id }}{
+    color: var(--Content-Base-primary, #111827);
+    font-size: 24px;
+    line-height: 28px; /* 116.667% */
+    letter-spacing: -0.48px;
+    margin: 0 0 24px;
+  }
+  .fc2-{{ id }}{
+    display: grid;
+    grid-template-columns: minmax(0px, 1fr);
+    overflow: hidden;
+  }
+  @media screen and (min-width: 990px){
+    #shopify-section-{{id}} {
+      width: 100%;
+      overflow: hidden;
+      grid-column: 1/-1;
+    }
+  }
+  @media(max-width: 989px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+      max-width: 100vw;
+    overflow: hidden;
+    }
+  }
+</style>
+
+<div class="sec-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}" {% if settings.animations_reveal_on_scroll %}data-cascade{% endif %}>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    {% if section.settings.heading != blank %}
+      <h2 class="heading-{{ id }}">{{ section.settings.heading }}</h2>
+    {% endif %}
+    <div class="wrapper-{{ id }}">
+      <div class="swiper fc2-{{ id }}">
+        <div class="swiper-wrapper">
+          {% for product in section.settings.collection.products %}
+            <div class="swiper-slide {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+            >
+              {% render 'product-card', product: product, forloop: forloop %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", (event) => {
+    new Swiper(".wrapper-{{ id }} .fc2-{{ id }}", {
+      slidesPerView: 1,
+      spaceBetween: 16,
+      breakpoints: {
+        300: {
+          slidesPerView: 1.2,
+          spaceBetween: 20,
+        },
+        768: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        1024: {
+          slidesPerView: 3,
+          spaceBetween: 24,
+        },
+        1200: {
+          slidesPerView: 4,
+          spaceBetween: 32,
+        },
+      },
+    })
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Featured Collection 2",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "heading",
+      "default": "Discover the Secret to Perfect Skin"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection 2"
+    }
+  ]
+}
+{% endschema %}

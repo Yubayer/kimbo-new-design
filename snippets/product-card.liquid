@@ -1,0 +1,137 @@
+{% liquid
+  assign show_second_image = true
+  assign hover_transition = true
+%}
+
+<product-card>
+  <div
+    class="pc-wrapper {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+      style="--animation-order: {{ forloop.index }};"
+    {% endif %}
+  >
+    <div class="pc-media-wrapper">
+      <div class="pc-media {% if show_second_image and product.media.size > 1 %}show-second-image{% endif %} {% if hover_transition %} hover-transition{% endif %}">
+        {% unless product.featured_image == blank %}
+          {% if forloop.index > 7 %}
+            {{ product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', class: 'first-image' }}
+          {% else %}
+            {{ product.featured_image | image_url: width: 400 | image_tag: class: 'first-image' }}
+          {% endif %}
+          {% if show_second_image and product.media.size > 1 %}
+            {{
+              product.media[1]
+              | image_url: width: 400
+              | image_tag: loading: 'lazy', class: 'second-image lazyload'
+              | replace: 'src',
+                'src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src'
+              | replace: 'srcset', 'data-srcset'
+            }}
+          {% else %}
+            {{
+              product.featured_image
+              | image_url: width: 400
+              | image_tag: 'lazy', class: 'second-image lazyload'
+              | replace: 'src',
+                'src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src'
+              | replace: 'srcset', 'data-srcset'
+            }}
+          {% endif %}
+        {% endunless %}
+      </div>
+      <a class="goto-product" href="{{ product.url }}"></a>
+      {% if product.metafields.custom.card_badge != blank %}
+        <div class="pc-card-badge-shape"></div>
+        <button class="pc-card-badge">{{ product.metafields.custom.card_badge }}</button>
+      {% endif %}
+      <div
+        class="pc-quick-add"
+        {% unless product.selected_or_first_available_variant.available %}
+          hidden
+        {% endunless %}
+      >
+        {% # if product.has_only_default_variant %}
+        {% form 'product', product %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button
+            type="submit"
+            class="upcart-cart custom-add-to-cart-button"
+            {% unless product.selected_or_first_available_variant.available %}
+              disabled
+            {% endunless %}
+          >
+            {% unless product.selected_or_first_available_variant.available %}
+              Sold Out
+            {% else %}
+              Add To Cart
+            {% endunless %}
+            {% render 'all-icons', name: 'cart-plus' %}
+          </button>
+        {% endform %}
+        {% # else %}
+        <!-- <a href="{{ product.url }}" class="pc-view-details">View Details</a> -->
+        {% # endif %}
+      </div>
+      <button
+        type="button"
+        class="notify-stock-button-x card"
+        data-title="{{ product.title }}"
+        data-variant="{{ product.selected_or_first_available_variant.id }}"
+        {% if product.selected_or_first_available_variant.available %}
+          hidden
+        {% endif %}
+      >
+        {{ settings.card_button_label | default: 'Notify Me' }}
+      </button>
+    </div>
+    <div class="pc-info-wrapper">
+      <div class="appex">
+        <a class="pc-title" href="{{ product.url }}">{{ product.title }}</a>
+        <div class="pc-price">
+          {% if product.selected_or_first_available_variant.price
+              < product.selected_or_first_available_variant.compare_at_price
+          %}
+            <h2 class="regular-price">{{ product.selected_or_first_available_variant.price | money_with_currency }}</h2>
+            <h3 class="compare-price">
+              {{ product.selected_or_first_available_variant.compare_at_price | money_with_currency }}
+            </h3>
+          {% else %}
+            <h2 class="regular-price">{{ product.selected_or_first_available_variant.price | money_with_currency }}</h2>
+          {% endif %}
+        </div>
+      </div>
+      <div class="bottom">
+        <div
+          class="loox-rating"
+          data-id="{{ product.id }}"
+          data-rating="{{ product.metafields.loox.avg_rating }}"
+          data-raters="{{ product.metafields.loox.num_reviews }}"
+        ></div>
+        {% unless product.metafields.custom.intensity == blank or product.metafields.custom.roast_type == blank %}
+          <div class="pc-intensity-roast">
+            {% unless product.metafields.custom.intensity == blank %}
+              <div class="ir-item">
+                {% render 'intensity-icon' %}
+                <h2>
+                  Intensity
+                  <span> {{ product.metafields.custom.intensity }}</span>
+                </h2>
+              </div>
+            {% endunless %}
+            {% unless product.metafields.custom.roast_type == blank %}
+              <div class="ir-item">
+                {% render 'roast-icon' %}
+                <h2>
+                  Roast
+                  <span> {{ product.metafields.custom.roast_type }}</span>
+                </h2>
+              </div>
+            {% endunless %}
+          </div>
+        {% endunless %}
+      </div>
+    </div>
+  </div>
+</product-card>

@@ -1,0 +1,202 @@
+<style>
+  .section-container--{{ section.id }}{
+    margin-top: {{ section.settings.margin_top | append:'px' }};
+    margin-bottom: {{ section.settings.margin_bottom | append:'px' }};
+    padding-top: {{ section.settings.padding_top | append:'px' }};
+    padding-bottom: {{ section.settings.padding_bottom | append:'px' }};
+    overflow: hidden;
+  }
+.section-wrapper--{{ section.id }} {
+ 
+  h1 {
+    text-align: center;
+    margin-block: 40px;
+    font-size: 72px;
+    line-height: 72px;
+    @media screen and (max-width: 768px){
+      margin-block: 24px;
+      font-size: 40px;
+      line-height: 44px;
+    }
+  }
+  .icon-wrapper {
+    /* display: -webkit-inline-box; */
+    display: flex;
+    gap: 64px;
+    align-items: center;
+    justify-content: center;
+    @media screen and (max-width: 768px){
+      gap: 16px;
+      img {
+        max-width: 56px;
+        height: auto;
+      }
+    }
+}
+
+
+
+
+
+
+  
+}
+
+  @media screen and (max-width: 768px){
+    .section-container--{{ section.id }}{
+      margin-top: {{ section.settings.margin_top_mobile | append:'px' }};
+      margin-bottom: {{ section.settings.margin_bottom_mobile | append:'px'  }};
+      padding-top: {{ section.settings.padding_top_mobile | append:'px' }};
+      padding-bottom: {{ section.settings.padding_bottom_mobile | append:'px' }};
+    }
+
+  }
+</style>
+<section class="section-container--{{ section.id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+  {% if settings.animations_reveal_on_scroll %} data-cascade {% endif %}
+>
+  <div class="section-wrapper--{{ section.id }} page-width">
+    <h1>{{ section.settings.title }}</h1>
+
+    <div class="icon-wrapper">
+      {% for block in section.blocks %}
+        {% unless block.settings.image == blank %}
+          <div class="icon-box {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+          >
+            {{ block.settings.image | image_url: width: block.settings.image.width | image_tag }}
+          </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Maze Partnership",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Partnership"
+    },
+    {
+      "type": "color",
+      "id": "bg-color",
+      "label": "Background Color"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Mobile Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Top (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Bottom (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top  (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom  (Mobile)",
+      "default": 20
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Icon",
+      "type": "icon",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Maze Partnership"
+    }
+  ]
+}
+{% endschema %}

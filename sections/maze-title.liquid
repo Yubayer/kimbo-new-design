@@ -1,0 +1,224 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+
+
+  .header__container-{{ id }} h2{
+    color: var(--Content-Base-primary, #111827);
+    font-size: 72px;
+    line-height: 1; /* 91.667% */
+    text-transform: capitalize;
+    margin: 0;
+  }
+
+
+  @media screen and (min-width: 769px){
+    .header__container-{{ id }}{
+      display: flex;
+      align-items: center;
+      /* justify-content: space-between; */
+      justify-content: center;
+      gap: 40px;
+      margin: 0 0 64px;
+    }
+  }
+
+  @media screen and (max-width: 768px){
+
+   .header__container-{{ id }}{
+      margin: 0;
+    }
+    .header__container-{{ id }} h2{
+      font-size: 40px;
+      line-height: 44px; /* 91.667% */
+      margin: 0;
+    }
+
+}
+</style>
+
+<div
+  class="sec-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+  {% if settings.animations_reveal_on_scroll %}
+    data-cascade
+  {% endif %}
+>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="header__container-{{ id }}">
+      {% if section.settings.title != blank %}
+        <h2 class="heading-{{ id }}">{{ section.settings.title }}</h2>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const headerItems = document.querySelectorAll('.sec-{{ id }} .collection__header-item');
+    const collections = document.querySelectorAll('.sec-{{ id }} .featured__collection');
+
+    collections[0].classList.add('active');
+
+    headerItems.forEach((item, index) => {
+      item.addEventListener('click', function() {
+        const target = this.dataset.item;
+
+        headerItems.forEach(item => {
+          item.classList.remove('selected');
+        });
+
+        if(headerItems.length > 1){
+          this.classList.add('selected');
+        }
+
+        collections.forEach(collection => {
+          if (collection.dataset.item === target) {
+            collection.classList.add('active');
+            setTimeout(() => {
+              collection.style.opacity = 1;
+            }, 10);
+          } else {
+            collection.classList.remove('active');
+            collection.style.opacity = 0;
+          }
+        });
+      });
+      if (index === 0 && headerItems.length > 1) {
+        item.classList.add('selected');
+      }
+
+    });
+  });
+</script>
+{% schema %}
+{
+  "name": "Maze Title",
+  "class": "lazyload",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Top Selling Coffees"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Maze Title"
+    }
+  ]
+}
+{% endschema %}

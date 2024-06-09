@@ -1,0 +1,180 @@
+.filter--container{
+  position: fixed;
+  width: 510px;
+  height: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  border-radius: 0px;
+  box-sizing: border-box;
+  border: 0px solid #E60000;
+  top: 0;
+  left: -510px;
+  z-index: 99;
+  transition: .5s;
+  margin-bottom: 30px;
+  @media(max-width: 500px) {
+    width: 100%;
+    left: -100vw;
+  } 
+  .filter--wrapper{
+    overflow: auto;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 40px 40px;
+    @media(max-width: 768px) {
+      padding: 20px 20px;
+    }
+    form{
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    details{
+      summary{
+        .filter-label{
+          display: grid;
+          grid-template-columns: 1fr 50px;
+          grid-gap: 10px;
+          div{
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            span{
+              color: #000;
+              font-size: 22px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 24px;
+              margin: 0;
+            }
+          }
+          svg{
+            transform-origin: center;
+            transition: .4s;
+            justify-self: end;
+          }
+        }
+      }
+      .options-wrapper{
+        .url_to_remove {
+          padding-left: 13px;
+        }
+        ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          li{
+            line-height: 1;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            input{
+              width: 20px;
+              height: 20px;
+              border-radius: var(--spacing-xs, 4px);
+              border: 1px solid var(--Colors-Border-border-primary, #D0D5DD);
+              box-sizing: border-box;
+              padding: 0;
+              margin: 0;
+            }
+            label {
+              display: flex;
+              justify-content: space-between;
+              width: 100%;
+              box-sizing: border-box;
+              padding-right: 4px;
+              h3{
+                color: #000;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+                margin: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+    details[open]{
+      summary{
+        .filter-label{
+          margin-bottom: 20px;
+          svg{
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+    .filter-group-display__price-range {
+      *:focus-visible {
+        outline: 0;
+        outline-offset: 0;
+        box-shadow: unset;
+      }
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0px;
+      input[type=number] {
+        width: max-content;
+        height: 35px;
+        padding-inline: 7px;
+        font-size: 15px;
+        font-weight: bold;
+        border: 2px solid #573d3c;
+        border-radius: 4px;
+        color: black;
+      }
+      input[type=number]::placeholder{
+        color: black;
+        font-size: 15px;
+      }
+    }
+  }
+  .filter--wrapper::-webkit-scrollbar{
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #E60000; 
+  }
+  .filter-heading{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 64px;
+    h3{
+      color: #000;
+      font-size: 40px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 36px;
+      margin: 0;
+    }
+    .close-drawer {
+      border: 0;
+      border-radius: 3px;
+      background: transparent;
+      z-index: 2;
+      width: max-content;
+      height: max-content;
+      padding: 0;
+      cursor: pointer;
+      span{
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+  
+}
+.filter--container.active{
+  left: 0;
+}

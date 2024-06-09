@@ -1,0 +1,883 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    border-bottom: 1px solid #E6E6E6;
+  }
+
+  @media(max-width: 1200px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+  .sec-{{ id }}{
+    position: relative;
+    width: 100%;
+    background: #fff;
+    transition: transform 0.3s ease, position 0.3s ease;
+    z-index: 999;
+  }
+
+  .logo__class{
+    display: inline-block;
+    font-size: 0;
+    line-height: 0;
+  }
+  .logo__class img{
+    width: {{ section.settings.logo_width | append: 'px' }};
+    height: auto;
+  }
+
+  /* Mega Menu Style */
+  header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header__menu-container ul{
+    padding: 0;
+    margin: 0;
+  }
+  .header__menu-container ul li{
+    list-style-type: none;
+  }
+  .header__menu-container ul li a{
+    text-decoration: none;
+    display: inline-block;
+  }
+  .m-menu-bar {
+    position: relative;
+    z-index: 1;
+  }
+  .m-mega-menu{
+    position: absolute;
+    z-index: 50;
+    /* width: 100%; */
+    min-width: 250px;
+    white-space: normal;
+    background-color: #fff;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition-property: transform,opacity,visibility;
+    transition-duration: var(--m-duration-default, .25s);
+  }
+  .m-menu__item--mega .m-mega-menu {
+    left: 0;
+    right: 0;
+    border-top: 1px solid #E6E6E6;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: calc(100vh - var(--m-header-height, 0px));
+    border-top: 1px solid rgba(0,0,0,0);
+    transition: all var(--m-duration-default, .25s) ease-in;
+  }
+  .m-menu__item--active .m-mega-menu {
+    visibility: visible;
+    opacity: 1;
+    transition: none;
+    pointer-events: auto;
+  }
+  .m-mega-menu__container{
+    padding-block: 32px;
+    padding-inline: 32px;
+  }
+  .m-mega-menu__inner{
+    display: flex;
+    gap: 36px;
+  }
+  .m-mega-menu__content, .m-menu__item--mega .m-sub-menu--level-1{
+    width: 50%;
+  }
+  .m-mega-collection-list__wrapper {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    grid-gap: 40px;
+  }
+  .m-collection-card__inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .m-collection-card__image{
+    font-size: 0;
+    line-height: 0;
+  }
+  .m-collection-card__image img{
+    width: auto;
+    max-height: 70px;
+    object-fit: cover;
+  }
+  .m-collection-card__info h3.m-collection-card__title{
+    color: var(--Color-Text-Base, #465367);
+    font-size: 24px;
+    line-height: 28px; /* 116.667% */
+    margin: 0;
+  }
+  .m-collection-card__info h3.m-collection-card__title a{
+    color: inherit;
+  }
+  .m-menu__item--mega .m-sub-menu.m-sub-menu--level-1{
+    display: flex;
+  }
+  .m-menu__item--mega .m-sub-menu__item.m-sub-menu__item--level-1{
+    width: 50%;
+  }
+  .m-sub-menu__item.m-sub-menu__item--level-1 a{
+    color: #000;
+    font-size: 24px;
+    line-height: 36px; /* 116.667% */
+  }
+  .m-menu__item--mega .m-sub-menu__item.m-sub-menu__item--level-1 > a.m-menu__link{
+    color: var(--Color-Text-main, #111827);
+    font-size: 32px;
+    line-height: 36px;
+    padding: 0 0 8px;
+    margin: 0 0 32px;
+  }
+  .m-sub-menu__item.m-sub-menu__item--level-2 a{
+    color: var(--Color-Text-Base, #465367);
+    font-size: 24px;
+    line-height: 36px; /* 116.667% */
+  }
+  .m-menu{
+    white-space: nowrap;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    --main-link-px: 32px;
+    --main-link-py: 16px;
+    margin-left: calc(-1*var(--main-link-px));
+    margin-right: calc(-1*var(--main-link-px));
+  }
+  .m-mega-menu__content h4{
+    color: var(--Color-Text-main, #111827);
+    font-size: 32px;
+    line-height: 36px; /* 112.5% */
+    padding: 0 0 8px;
+    margin: 0 0 40px;
+  }
+
+
+  .m-menu__link--main{
+    color: #000;
+    font-size: 22px;
+    line-height: 24px; /* 109.091% */
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    padding: 33px 32px;
+  }
+  .m-menu__arrow{
+    font-size: 0;
+    line-height: 0;
+  }
+  @media screen and (max-width: 1320px){
+    .header__icons-links a span{
+      display: none;
+    }
+    .m-menu__link--main, .header__icons-links a{
+      padding: 16px !important;
+    }
+    .m-menu__link--main {
+      color: #000;
+      font-size: 16px;
+      line-height: 20px;
+    }
+  }
+  @media screen and (min-width: 1201px){
+    .m-menu > li{
+      border-right: 1px solid #E6E6E6;
+    }
+    .m-menu__item--mega .m-sub-menu__item.m-sub-menu__item--level-1 > a.m-menu__link{
+      border-bottom: 1px solid #CCC;
+    }
+    .m-mega-menu__content h4{
+      border-bottom: 1px solid #CCC;
+    }
+    .header__icons-links a{
+      border-right: 1px solid #E6E6E6;
+    }
+    .menu__drawer{
+      display: none;
+    }
+  }
+  /* Mega Menu Style */
+
+  /* Header Icons */
+  .header__right{
+    display: flex;
+    align-items: center;
+  }
+  .header__icons-links{
+    display: flex;
+    align-items: center;
+  }
+  .header__icons-links a{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 33px 32px;
+    font-size: 0;
+    line-height: 0;
+    text-decoration: none;
+  }
+  .header__icons-links a span{
+    color: #000;
+    font-size: 22px;
+    line-height: 24px;
+    transform: translateY(2px);
+  }
+  /* Header Icons */
+  @media screen and (max-width: 1200px){
+    .sec-{{ id }} > div, .m-mega-menu__container{
+      padding: 0 15px;
+    }
+    .logo__class img{
+      width: {{ section.settings.logo_width_m | append: 'px' }};
+    }
+    .header__menu-container, .hide__small{
+      display: none !important;
+    }
+    .header__icons-links a{
+      padding: 0;
+    }
+
+    /* Mobile Menu & Drawer */
+      berger{
+        display: inline-block;
+        font-size: 0;
+        line-height: 0;
+      }
+      .mobile-drawer{
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        z-index: 999;
+        background: #fff;
+        transform: translate(-100%);
+        visibility: hidden;
+        transition-property: transform,visibility;
+        transition-duration: 0.5s;
+        transition-timing-function: ease;
+      }
+      [drawer-opened] .mobile-drawer{
+        transform: translate(0);
+        visibility: visible;
+      }
+
+      .mobile-drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #EA094B;
+        padding-block: 1rem;
+      }
+      .mobile-drawer-header > div{
+        font-size: 0;
+        line-height: 0;
+      }
+      .mobile-drawer-wrapper.page-width{
+        padding-block: 30px;
+      }
+      .drawer-header{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row-reverse;
+        position: relative;
+        margin: 0 0 20px;
+      }
+      .mobile-drawer-closer{
+        font-size: 0;
+        line-height: 0;
+        display: flex;
+        justify-content: flex-end;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .menu-drawer__navigation-custom ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+      }
+
+      ul.parent-m > li a {
+        color: var(--Color-Text-main, #111827);
+        font-size: 24px;
+        line-height: 28px; /* 116.667% */
+        text-decoration: none;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+      ul.child-m > li a{
+        color: var(--Color-Text-main, #111827);
+        font-size: 20px;
+        line-height: 24px; /* 116.667% */
+        text-decoration: none;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+      ul.grandchild-m > li a{
+        color: var(--Color-Text-Base, #465367);
+        font-size: 16px;
+        line-height: 18px; /* 112.5% */
+        text-decoration: none;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+      .collection--image-container{
+        display: flex !important;
+        align-items: center;
+        gap: 12px;
+      }
+     .collection--image{
+       width: 18px;
+       height: 18px;
+       object-fit: cover;
+       border-radius: 50%;
+     }
+      .expand-icon-container {
+        display: inline-block;
+      }
+
+      .has-sub-menu,
+      .has-double-sub-menu {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      .expand-icon-container-wrapper {
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+
+      .parent-m ul,
+      .child-m ul,
+      .grandchild-m ul {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.5s ease-in-out;
+      }
+
+      .open > ul {
+        max-height: 2000px !important; /* Adjust as needed */
+      }
+      .expand-icon-container-wrapper .plus-icon{
+        transition: all 0.5s ease-in-out;
+      }
+      .open > div > .expand-icon-container > .expand-icon-container-wrapper > .plus-icon {
+          transform: rotate(180deg);
+      }
+      ul.child-m, ul.grandchild-m{
+        /* margin-left: 14px; */
+      }
+      ul.parent-m > li{
+        padding: 16px 0;
+      }
+      ul.child-m > li{
+        /* padding: 12px 0; */
+      }
+
+      ul.child-m li:nth-of-type(1){
+        padding: 12px 0;
+      }
+      ul.child-m li:not(:last-child){
+        padding-bottom: 12px;
+      }
+
+      ul.grandchild-m li:nth-of-type(1){
+        padding: 8px 0;
+      }
+      ul.grandchild-m li:not(:last-child){
+        padding-bottom: 8px;
+      }
+
+      li.open{
+        /* padding-bottom: 0 !important;
+        border-bottom: none !important; */
+      }
+      .menu-drawer__menu  li{
+        /* padding: 14px 0; */
+      }
+      ul.parent-m >  li:not(:last-child){
+        border-bottom: 1px solid #D0D0D0;
+      }
+      .menu-drawer__menu  li:last-child{
+        /* padding-block-end: 0; */
+      }
+
+
+    /* Mobile Menu & Drawer */
+  }
+</style>
+
+{{ 'predictive-searches.css' | asset_url | stylesheet_tag }}
+
+<div class="sec-{{ id }}">
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <header>
+      <nav class="header__left left-menu header__menu-container">
+        {% render 'custom-menu', menu: section.settings.menu_left, section: section %}
+      </nav>
+      <div class="menu__drawer">
+        {% render 'custom-drawer-menu', section: section, menu: section.settings.mbl_menu, section: section %}
+      </div>
+      <a class="logo__class" href="/">
+        {% if section.settings.image %}
+          {{ section.settings.image | image_url: width: 300 | image_tag }}
+        {% else %}
+          <h1 class="logo__class">{{ shop.name }}</h1>
+        {% endif %}
+      </a>
+      <div class="header__right">
+        <nav class="right__menu header__menu-container">
+          {% render 'custom-menu', menu: section.settings.menu_right, section: section %}
+        </nav>
+        <div class="header__icons-links">
+          <a aria-label="search-icon" class="hide__small" href="/search">
+            {% render 'all-icons', name: 'search' %}
+          </a>
+          <a class="hide__small" href="/a/account/login">
+            {% render 'all-icons', name: 'account' %}
+            <span>Account</span>
+          </a>
+          <a href="/cart" id="cart-icon">
+            {% render 'all-icons', name: 'cart' %}
+            <span class="hide__small">Cart</span>
+          </a>
+        </div>
+      </div>
+    </header>
+  </div>
+</div>
+{% render 'predictive-search-form', section: section %}
+
+<script>
+  
+document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.sec-{{ id }}');
+    let lastScrollTop = 0;
+    const headerHeight = header.offsetHeight;
+
+    window.addEventListener('scroll', function() {
+        let scrollTop = window.scrollY;
+
+        if (scrollTop < 500) {
+            header.style.position = 'relative';
+            header.style.transform = 'translateY(0)';
+        } else {
+            if (scrollTop > lastScrollTop) {
+                header.style.transform = `translateY(-${headerHeight}px)`;
+            } else {
+                header.style.position = 'fixed';
+                header.style.top = '0';
+                header.style.transform = 'translateY(0)';
+            }
+        }
+
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+});
+
+</script>
+
+<script>
+  
+document.addEventListener('DOMContentLoaded', function() {
+  const menuItems = document.querySelectorAll('.m-menu__item--parent');
+
+  menuItems.forEach(function(item) {
+    item.addEventListener('mouseenter', function() {
+      this.classList.add('m-menu__item--active');
+    });
+
+    item.addEventListener('mouseleave', function() {
+      this.classList.remove('m-menu__item--active');
+    });
+  });
+});
+
+
+  
+  const drawerOpener = document.querySelector("[drawer-opener]");
+  const drawerCloser = document.querySelector("[drawer-closer]");
+  drawerOpener.addEventListener("click", (e)=>{
+    document.body.toggleAttribute('drawer-opened');
+    document.body.style.overflow = "hidden";
+  })
+  drawerCloser.addEventListener("click", (e)=>{
+    document.body.toggleAttribute('drawer-opened');
+    document.body.style.overflow = "auto";
+  })
+
+  
+  const searchDrawerOpeners = document.querySelectorAll("[aria-label='search-icon']");
+  const searchDrawerClosers = document.querySelectorAll("[close-search-drawer]");
+  
+  searchDrawerOpeners.forEach(opener => {
+    opener.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.body.toggleAttribute('search-drawer-opened');
+      document.body.style.overflow = "hidden";
+    });
+  });
+  
+  searchDrawerClosers.forEach(closer => {
+    closer.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.body.toggleAttribute('search-drawer-opened');
+      document.body.style.overflow = "auto";
+    });
+  });
+
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+      const expandIconContainers = document.querySelectorAll(".expand-icon-container");
+  
+      expandIconContainers.forEach(container => {
+          container.addEventListener("click", function (e) {
+              e.preventDefault();
+              const parentItem = this.closest("li");
+              const subMenu = parentItem.querySelector("ul");
+              const parentClass = parentItem.parentElement.classList;
+  
+              let sameLevelItems;
+              if (parentClass.contains("parent-m")) {
+                  sameLevelItems = document.querySelectorAll("#mobile-navigation ul.parent-m > li.open");
+              } else if (parentClass.contains("child-m")) {
+                  sameLevelItems = document.querySelectorAll("#mobile-navigation ul.child-m > li.open");
+              } else {
+                  sameLevelItems = document.querySelectorAll("#mobile-navigation ul.grandchild-m > li.open");
+              }
+  
+              sameLevelItems.forEach(openItem => {
+                  if (openItem !== parentItem) {
+                      openItem.classList.remove("open");
+                      const nestedUl = openItem.querySelector("ul");
+                      if (nestedUl) {
+                          nestedUl.style.maxHeight = `${nestedUl.scrollHeight}px`;
+                          window.getComputedStyle(nestedUl).maxHeight; // Trigger reflow
+                          nestedUl.style.maxHeight = "0";
+                      }
+                  }
+              });
+  
+              if (subMenu) {
+                  const isCurrentlyOpen = parentItem.classList.contains("open");
+                  parentItem.classList.toggle("open", !isCurrentlyOpen);
+                  if (isCurrentlyOpen) {
+                      subMenu.style.maxHeight = `${subMenu.scrollHeight}px`;
+                      window.getComputedStyle(subMenu).maxHeight; // Trigger reflow
+                      subMenu.style.maxHeight = "0";
+                  } else {
+                      subMenu.style.maxHeight = `${subMenu.scrollHeight}px`;
+                  }
+              }
+  
+              e.stopPropagation();
+          });
+      });
+  });
+</script>
+
+
+{% schema %}
+{
+  "name": "Custom Header",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 100,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo Width(Desktop)",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "logo_width_m",
+      "min": 100,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo Width(Mbl)",
+      "default": 150
+    },
+    {
+      "type": "header",
+      "content": "Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_left",
+      "label": "Left Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_right",
+      "label": "Right Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "mbl_menu",
+      "label": "Mobile Menu"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection-list",
+      "name": "Collections (Mega menu)",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "For item"
+        },
+        {
+          "type": "select",
+          "id": "container",
+          "label": "Container",
+          "default": "inherit",
+          "info": "Set width for the content wrapper",
+          "options": [
+            {
+              "value": "inherit",
+              "label": "Use header's container"
+            },
+            {
+              "value": "container-fluid",
+              "label": "Default"
+            },
+            {
+              "value": "w-full",
+              "label": "Full width"
+            },
+            {
+              "value": "container",
+              "label": "Use container box"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Collection list"
+        },
+        {
+          "type": "header",
+          "content": "Collection 1"
+        },
+        {
+          "type": "collection",
+          "id": "collection_1",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Featured image"
+        },
+        {
+          "type": "header",
+          "content": "Collection 2"
+        },
+        {
+          "type": "collection",
+          "id": "collection_2",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Featured image"
+        },
+        {
+          "type": "header",
+          "content": "Collection 3"
+        },
+        {
+          "type": "collection",
+          "id": "collection_3",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "Featured image"
+        },
+        {
+          "type": "header",
+          "content": "Collection 4"
+        },
+        {
+          "type": "collection",
+          "id": "collection_4",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_4",
+          "label": "Featured image"
+        },
+        {
+          "type": "header",
+          "content": "Collection 5"
+        },
+        {
+          "type": "collection",
+          "id": "collection_5",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_5",
+          "label": "Featured image"
+        },
+        {
+          "type": "header",
+          "content": "Collection 6"
+        },
+        {
+          "type": "collection",
+          "id": "collection_6",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_6",
+          "label": "Featured image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Header"
+    }
+  ]
+}
+{% endschema %}

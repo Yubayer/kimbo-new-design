@@ -1,0 +1,344 @@
+<style>
+  stock-notify{
+    .stock-notify-popup{
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: -999;
+      background: {{section.settings.shadow_bg}};
+      left: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .notify-container{
+      width: 100%;
+      max-width: 640px;
+      min-height: 242px;
+      border: 1px solid #E6E6E6;
+      background: var(--Background-base, #FFF);
+      box-shadow: 0px 10px 10px -5px rgba(0, 0, 0, 0.04), 0px 20px 25px -5px rgba(0, 0, 0, 0.10);
+      box-sizing: border-box;
+      padding: 40px 40px;
+      transfrom: translateY(140px);
+      opacity: 0;
+      @media(max-width: 645px) {
+        width: calc(100% - 20px);
+        padding: 30px 25px;
+      }
+      .notify-wrapper{
+        position: relative;
+        .notify-title{
+          color: var(--Balck, #000);
+          font-size: 32px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+          margin: 0 0 8px;
+          text-align: center;
+          @media(max-width: 768px) {
+            font-size: 24px;
+          }
+        }
+        .notify-text{
+          color: var(--Balck, #000);
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+          margin: 0;
+          text-align: center;
+        }
+        .close-button{
+          position: absolute;
+          right: 0;
+          top: -11px;
+          border: 0;
+          background: white;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          @media(max-width: 768px) {
+            right: -10px;
+            top: -19px;
+          }
+        }
+      }
+      form{
+        margin-top: 14px;
+        .form-group{
+          display: grid;
+          grid-template-columns: 1fr auto;
+          grid-template-rows: 48px;
+          align-items: center;
+          grid-gap: 0px;
+          background: #FFF5EE;
+          @media(max-width: 768px) {
+            grid-template-columns: 1fr;
+            grid-template-rows: 48px 48px;
+            grid-gap: 9px;
+            background: transparent;
+          }
+          input{
+            color: var(--Balck, #000);
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 16px; /* 114.286% */
+            background: #FFF5EE;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding-inline: 16px;
+          }
+          input::placeholder{
+            color: var(--Balck, #000);
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 16px; /* 114.286% */
+            opacity: .7;
+            font-family: "RethinkSans-Regular";
+          }
+          button{
+            color: white;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 16px;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding-inline: 32px;
+            cursor: pointer;
+            background: #D41317;
+          }
+        }
+      }
+    }
+  }
+
+  stock-notify.active{
+    .stock-notify-popup{
+      z-index: 999;
+      .notify-container{
+        transfrom: translateY(0px);
+        opacity: 1;
+        transition: .4 linear;
+      }
+    }
+    .error-msg:empty,
+    .success-msg:empty{
+      display:none;
+    }
+    .error-msg{
+      color: red;
+    }
+    .success-msg{
+      margin-top: 14px;
+      letter-spacing: 0px;
+      color: black;
+      font-size: 16px;
+      text-align: center;
+      line-height: normal;
+    }
+  }
+</style>
+
+<stock-notify
+  class=""
+  data-success-msg="{{ section.settings.success_message | default: "Thank you for your interest. We will get back to you via email as soon as this product is in stock." }}"
+>
+  <div class="stock-notify-popup">
+    <div class="notify-container">
+      <div class="notify-wrapper">
+        <button class="close-button">
+          {% render 'popup-close-icon' %}
+        </button>
+        <h2 class="notify-title">{{ section.settings.header }}</h2>
+        <p class="notify-text rethink-sans">{{ section.settings.text }}</p>
+        <form class="notify-form">
+          <div class="form-group">
+            <input
+              class="rethink-sans"
+              type="email"
+              name="email"
+              placeholder="{{ section.settings.placeholder }}"
+              required
+            >
+            <button type="button" class="notify-submit-button">{{ section.settings.button_text }}</button>
+          </div>
+          <small class="error-msg"></small>
+          <p class="success-msg rethink-sans"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</stock-notify>
+
+<script>
+  class StockNotify extends HTMLElement{
+    constructor() {
+      super()
+
+      this.company_id = "{{ section.settings.company_id | strip }}"
+
+      this.titleEl = this.querySelector(".notify-title")
+      this.formEl = this.querySelector("form")
+      this.formButton = this.querySelector(".notify-submit-button")
+      this.errorEl = this.querySelector(".error-msg")
+      this.successEl = this.querySelector(".success-msg")
+
+      this.closeBtn = this.querySelector(".close-button")
+      this.closeBtn.addEventListener("click", this.closePopup.bind(this))
+
+      this.formButton.addEventListener("click", this.handleFormSubmit.bind(this))
+
+      this.formEl.addEventListener("submit", e => {
+        e.preventDefault()
+        this.handleFormSubmit(e)
+      })
+    }
+
+    handleFormSubmit(e) {
+      let email = this.formEl.querySelector("input[type=email]").value
+      let isValid = this.validateEmail(email)
+      if(!this.company_id || this.company_id == null || this.company_id === '' || this.company_id.length < 1) {
+        return
+      }
+      if(isValid) {
+        this.errorEl.innerHTML = ""
+        this.callApi(email)
+      } else {
+        this.errorEl.innerHTML = "Please Enter a Valid Email"
+      }
+    }
+
+    validateEmail(email) {
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    }
+
+    callApi(email) {
+      const options = {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          revision: '2024-05-15',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          data: {
+            type: 'back-in-stock-subscription',
+            attributes: {
+              channels: ['EMAIL'],
+              profile: {data: {type: 'profile', attributes: {email: email}}}
+            },
+            relationships: {
+              variant: {
+                data: {
+                  type: 'catalog-variant',
+                  id: '$shopify:::$default:::'+this.variant_id
+                }
+              }
+            }
+          }
+        })
+      };
+
+      fetch(`https://a.klaviyo.com/client/back-in-stock-subscriptions/?company_id=${this.company_id}`, options)
+      .then(response => {
+        console.log("klaviyo response", response)
+      })
+      .catch(err => {
+        console.error("klaviyo error: ", err)
+      })
+      .finally(() => {
+        this.successEl.innerHTML = this.dataset.successMsg
+      })
+    }
+
+    handleNotifyButton(e) {
+      e.preventDefault()
+      this.title = e.target.dataset.title
+      this.variant_id = e.target.dataset.variant
+      this.titleEl.innerHTML = this.title
+
+      this.openPopup()
+    }
+
+    openPopup() {
+      this.classList.add("active")
+      document.body.style.overflow = 'hidden'
+      this.removeAttribute('type')
+    }
+    closePopup() {
+      this.classList.remove("active")
+      document.body.style.overflow = 'inherit'
+      this.successEl.innerHTML = ""
+      this.errorEl.innerHTML = ""
+    }
+  }
+
+  customElements.define("stock-notify", StockNotify)
+
+  let popupNotifyObject = document.querySelector("stock-notify")
+   window.notifyPopup = () => {
+      let popupNotifyButtons = document.querySelectorAll("button.notify-stock-button-x")
+      popupNotifyButtons?.forEach(button => {
+        button.addEventListener("click", e => popupNotifyObject.handleNotifyButton(e))
+      })
+   }
+  notifyPopup()
+</script>
+
+{% schema %}
+{
+  "name": "Stock Notify Popup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "company_id",
+      "label": "Company Id",
+      "default": "PGQBTc",
+      "info": "Come From API"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Register to receive a notification when this item comes back in stock"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Notify me when available"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input Placeholder",
+      "default": "Email"
+    },
+    {
+      "type": "color_background",
+      "id": "shadow_bg",
+      "label": "Shadow Background",
+      "default": "#ffffff99"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "default": "Thank you for your interest. We will get back to you via email as soon as this product is in stock.",
+      "label": "Success message"
+    }
+  ]
+}
+{% endschema %}

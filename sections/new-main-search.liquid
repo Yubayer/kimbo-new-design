@@ -1,0 +1,354 @@
+{% liquid
+  assign id = section.id
+  assign sort_by = search.sort_by | default: search.default_sort_by
+  assign terms = search.terms | escape
+  assign search_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    overflow: hidden;
+    *:focus-visible {
+      outline: none !important;
+      outline-offset: unset !important;
+      box-shadow: unset !important;
+    }
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+
+  .filter-and-sorting{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    .filter-wrapper{
+      .filter-button{
+        display: flex;
+        gap: 10px;
+        cursor: pointer;
+        h3{
+          line-height: 1;
+          margin: 0;
+          color: #000;
+          font-size: 22px;
+          font-style: normal;
+          line-height: 1;
+        }
+      }
+    }
+    .sorting-wrapper {
+      justify-self: end;
+       *:focus-visible {
+        outline: 0;
+        outline-offset: 0;
+        box-shadow: unset;
+      }
+      form{
+        display: flex;
+        align-items: center;
+      }
+      select,h3{
+        display: flex;
+        border: none;
+        border-radius: 4px;
+        color: #000;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        padding-block: 10px;
+        font-family: "BebasNeue-Regular";
+        margin: 0;
+      }
+    }
+    .product-count{
+      p{
+        margin: 0;
+        color: #000;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 26px;
+      }
+    }
+    @media(max-width: 768px) {
+      grid-template-columns: auto 1fr;
+      grid-gap: 10px;
+      .product-count{
+        display: none;
+      }
+    }
+  }
+
+  .new-pagination {
+    margin-top: 45px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    *{
+      color: black;
+    }
+  }
+
+  .template-search__header {
+    margin-bottom: 3rem;
+  }
+
+  .template-search__search {
+    margin: 0 auto 3.5rem;
+    max-width: 74.1rem;
+  }
+
+  .template-search__search .search {
+    margin-top: 3rem;
+  }
+
+  .template-search--empty {
+    padding-bottom: 18rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .template-search__header {
+      margin-bottom: 5rem;
+    }
+  }
+
+  .search__button .icon {
+    height: 1.8rem;
+  }
+</style>
+
+<div class="sec-{{ id }}" id="{{ section.id }}">
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    {% paginate search.results by 24 %}
+      <new-search>
+        <form action="{{ routes.search_url }}" method="get" role="search" class="search">
+          <div class="field">
+            <input
+              class="search__input field__input"
+              id="Search-In-Template"
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="{{ 'general.search.search' | t }}"
+              {%- if settings.predictive_search_enabled -%}
+                role="combobox"
+                aria-expanded="false"
+                aria-owns="predictive-search-results"
+                aria-controls="predictive-search-results"
+                aria-haspopup="listbox"
+                aria-autocomplete="list"
+                autocorrect="off"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+              {%- endif -%}
+            >
+            <label class="field__label" for="Search-In-Template">{{ 'general.search.search' | t }}</label>
+            <input name="options[prefix]" type="hidden" value="last">
+
+            {%- if settings.predictive_search_enabled -%}
+              <div class="predictive-search predictive-search--search-template" tabindex="-1" data-predictive-search>
+                {%- render 'loading-spinner', class: 'predictive-search__loading-state' -%}
+              </div>
+
+              <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+            {%- endif -%}
+
+            <button
+              type="reset"
+              class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
+              aria-label="{{ 'general.search.reset' | t }}"
+            >
+              <svg class="icon icon-close" aria-hidden="true" focusable="false">
+                <use xlink:href="#icon-reset">
+              </svg>
+            </button>
+            <button type="submit" class="search__button field__button" aria-label="{{ 'general.search.search' | t }}">
+              <svg class="icon icon-search" aria-hidden="true" focusable="false">
+                <use xlink:href="#icon-search">
+              </svg>
+            </button>
+          </div>
+        </form>
+      </new-search>
+      {%- if search.performed -%}
+        <div class="wrapper-{{ id }}">
+          <div class="filter-and-sorting hidden">
+            <div class="filter-wrapper">
+              <div class="filter-button">
+                {% render 'filter-icon' %}
+                <h3>Filter</h3>
+              </div>
+              {% render 'new-filter', collection: collection, section: section %}
+            </div>
+            <div class="product-count">
+              {% if paginate.current_page < paginate.pages %}
+                <p>Showing {{ paginate.page_size }} out of {{ paginate.items }} products</p>
+              {% else %}
+                <p>
+                  Showing {{ paginate.items | minus: paginate.current_offset }} out of {{ paginate.items }} products
+                </p>
+              {% endif %}
+            </div>
+            <div class="sorting-wrapper">
+              <sorting-el>
+                <form>
+                  <h3>Sort by:</h3>
+                  <select name="sort_by" id="sort-by">
+                    {%- assign sort_by = search.sort_by | default: search.default_sort_by -%}
+                    {% for option in search.sort_options %}
+                      <option
+                        value="{{ option.value }}"
+                        {% if option.value == sort_by %}
+                          selected="selected"
+                        {% endif %}
+                      >
+                        {{ option.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </sorting-el>
+            </div>
+          </div>
+          <div class="new-product-grid">
+            {% for item in search.results %}
+              {%- case item.object_type -%}
+                {%- when 'product' -%}
+                  {% assign product = item %}
+                  {% render 'product-card', product: product, forloop: forloop %}
+              {% endcase %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      <div class="new-pagination">{{ paginate | default_pagination }}</div>
+    {% endpaginate %}
+  </div>
+</div>
+
+<script src="{{ 'filter.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "New Main Search",
+  "templates": ["search"],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+
+  ],
+  "presets": [
+    {
+      "name": "New Main Search"
+    }
+  ]
+}
+{% endschema %}

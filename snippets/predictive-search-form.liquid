@@ -1,0 +1,37 @@
+
+<predictive-search>
+  <form action="{{ routes.search_url }}" method="get" role="search" class="search-input-form">
+    <div class="search-input-wrapper">
+      <input
+        id="Search"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="SEARCH"
+        autocomplete="off"
+        role="combobox"
+        aria-expanded="false"
+        aria-owns="predictive-search-results"
+        aria-controls="predictive-search-results"
+        aria-haspopup="listbox"
+        aria-autocomplete="list"
+      >
+      {% unless section.settings.search_icon == blank %}
+        <button>
+          <span>
+            {{ section.settings.search_icon }}
+          </span>
+        </button>
+      {% else %}
+        <button>
+          <span>
+            {% render 'all-icons', name: 'search' %}
+          </span>
+        </button>
+      {% endunless %}
+    </div>
+    <input name="options[prefix]" type="hidden" value="last">
+    <div id="predictive-search" tabindex="-1"></div>
+  </form>
+  <span class="close-search-drawer" close-search-drawer>{% render 'all-icons', name: "close" %}</span>
+</predictive-search>

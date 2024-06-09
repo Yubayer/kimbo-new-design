@@ -1,0 +1,464 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  @keyframes spin{
+          from {
+            transform: rotate(0deg);
+          } to {
+              transform: rotate(360deg);
+          }
+        }
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    max-width: 100vw;
+    overflow:hidden;
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+
+  .wrapper-{{ id }} {
+    display: grid;
+    grid-template-columns: repeat({{section.blocks.size}}, 1fr);
+    grid-gap: 40px;
+
+    @media(max-width: 768px) {
+      grid-template-columns: 1fr;
+      grid-gap: 32px;
+      box-sizing: border-box;
+    }
+
+    .text-wrapper.text-wrapper-0 {
+      position: relative;
+      svg{
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,10%);
+      }
+      .corner-icon {
+        position: absolute;
+        width: 146px;
+        height: 146px;
+        top: -100px;
+        {{section.settings.icon_position}}: -35px;
+
+        .background,
+        .forground{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          position: absolute;
+          top: 0;
+          top: 36px;
+          left: 0;
+          left: -16px;
+        }
+        .background{
+          z-index: 1;
+        }
+        .forground{
+          z-index: 2;
+          animation-name: spin;
+          animation-duration: 7000ms;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+        }
+        
+
+        @media(max-width: 768px) {
+          width: 80px;
+          height: 80px;
+          bottom: -40px;
+          top: unset;
+          {{section.settings.icon_position_mobile}}: -13px;
+        }
+      }
+    }
+    .text-wrapper {
+      display: flex;
+      flex-direction: column;
+      .sub-title{
+        color: #000;
+        font-size: 24px;
+        font-style: normal;
+        line-height: 24px;
+        letter-spacing: -0.48px;
+        margin: 0 0 12px 0;
+      }
+      .title{
+        color: #000;
+        font-size: 72px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 66px;
+        text-transform: capitalize;
+        margin: 0 0 12px 0;
+      }
+      .text{
+        color: #000;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: -0.32px;
+        margin-bottom: 24px;
+      }
+      .text p:first-child{
+        margin-top: 0;
+      }
+      .text p:last-child{
+        margin-bottom: 0;
+      }
+      .buttonX{
+        color: #FFF;
+        text-align: center;
+        font-size: 20px;
+        font-style: normal;
+        line-height: 1;
+        text-transform: uppercase;
+        display: block;
+        width: max-content;
+        box-sizing: border-box;
+        padding: 20px 30px;
+        min-width: 196px;
+        text-align: center;
+        background: #D41317;
+        text-decoration: none;
+      }
+
+      @media(max-width: 768px) {
+        .sub-title{
+          font-size: 20px;
+          line-height: 20px;
+          margin-bottom: 8px;
+        }
+        .title{
+          font-size: 40px;
+          line-height: 44px;
+          margin-bottom: 12px;
+        }
+        .text{
+          font-size: 12px;
+          line-height: 16px;
+          margin-bottom: 0px;
+        }
+        .buttonX{
+          width: 100%;
+          font-size: 20px;
+          padding: 14px 0px;
+          margin-top: 16px;
+        }
+      }
+    }
+  }
+</style>
+
+<div class="sec-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}" {% if settings.animations_reveal_on_scroll %} data-cascade {% endif %}>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'text' %}
+            <div class="text-wrapper text-wrapper-{{ forloop.index0 }}  {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+              {% if settings.animations_reveal_on_scroll %}
+                data-cascade
+                style="--animation-order: {{ forloop.index }};justify-content: {{ block.settings.alignment }};"
+              {% endif %}
+            >
+              {% unless block.settings.sub_title == blank %}
+                <h3 class="sub-title">{{ block.settings.sub_title }}</h3>
+              {% endunless %}
+              {% unless block.settings.title == blank %}
+                <h2 class="title">{{ block.settings.title }}</h2>
+              {% endunless %}
+              {% unless block.settings.text == blank %}
+                <div class="text rethink-sans">{{ block.settings.text }}</div>
+              {% endunless %}
+              {% unless block.settings.button_text == blank %}
+                <a class="buttonX" href="{{ block.settings.button_url }}">{{ block.settings.button_text }}</a>
+              {% endunless %}
+              {% if forloop.index0 == 0 %}
+                {% if section.settings.active_icon %}
+                <div class="corner-icon">
+                  {% unless settings.icon_background == blank %}
+                    {{
+                      settings.icon_background
+                      | image_url: width: 146
+                      | image_tag: loading: 'lazy', class: 'background'
+                    }}
+                  {% endunless %}
+                  {% unless settings.icon_forground == blank %}
+                    {{
+                      settings.icon_forground
+                      | image_url: width: 146
+                      | image_tag: loading: 'lazy', class: 'forground'
+                    }}
+                  {% endunless %}
+                </div>
+              {% endif %}
+              {% endif %}             
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Maze Text Image",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Image Corner Icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "active_icon",
+      "label": "Active Corner Icon",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon Position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Top Left"
+        },
+        {
+          "value": "right",
+          "label": "Top Right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "icon_position_mobile",
+      "label": "Icon Position Mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "right",
+          "label": "Bottom Right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "image_position_mobile",
+      "label": "Image Position Mobile",
+      "options": [
+        {
+          "value": "1/2",
+          "label": "Top"
+        },
+        {
+          "value": "2/3",
+          "label": "Bottom"
+        }
+      ],
+      "default": "1/2"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Vertical alignment",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "center",
+              "label": "Middle"
+            },
+            {
+              "value": "end",
+              "label": "Bottom"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "textarea",
+          "id": "sub_title",
+          "label": "Sub Title",
+          "default": "Sub Title"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "color_background",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title Color",
+          "default": "#212121"
+        },
+        {
+          "type": "color",
+          "id": "title_span_color",
+          "label": "Title Span Color",
+          "default": "#E60000"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#212121"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Maze Text Image"
+    }
+  ]
+}
+{% endschema %}

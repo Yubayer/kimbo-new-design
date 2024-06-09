@@ -1,0 +1,315 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    overflow: hidden;
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+  .container-{{ id }}{
+    padding-block: 40px;
+  }
+  .filter-and-sorting-wrapper{
+    border-block: 1px solid #E6E6E6;
+    box-sizing: border-box;
+    .filter-and-sorting{
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      .filter-wrapper{
+        padding-right: 24px;
+        @media(max-width: 768px) {
+          padding-right: 12px;
+        }
+        .filter-button{
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          h3{
+            line-height: 1;
+            margin: 0;
+            color: #000;
+            font-size: 22px;
+            font-style: normal;
+            line-height: 1;
+            @media(max-width: 768px) {
+              font-size: 16px;
+              line-height: 1;
+            }
+          }
+        }
+      }
+      .sorting-wrapper {
+        padding-left: 24px;
+        justify-self: end;
+         *:focus-visible {
+          outline: 0;
+          outline-offset: 0;
+          box-shadow: unset;
+        }
+        @media(max-width: 768px) {
+          padding-left: 12px;
+        }
+        form{
+          display: flex;
+          align-items: center;
+        }
+        h3{
+          width: max-content;
+        }
+        select{
+          @media(max-width: 768px) {
+            max-width: 80px;
+          }
+        }
+        select, h3{
+          display: flex;
+          border: none;
+          border-radius: 4px;
+          color: #000;
+          font-size: 22px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 1;
+          padding-block: 10px;
+          font-family: "BebasNeue-Regular";
+          margin: 0;
+          padding-block: 0;
+          @media(max-width: 768px) {
+            font-size: 16px;
+            line-height: 20px;
+          }
+
+        }
+      }
+      .product-count{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        border-inline: 1px solid #E6E6E6;
+        height: 100%;
+
+        padding-block: 20px;
+        @media(max-width: 768px) {
+          text-align: center;
+          padding-block: 12px;
+        }
+        p{
+          margin: 0;
+          color: #000;
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 26px;
+          @media(max-width: 768px) {
+            font-size: 12px;
+            line-height: 14px;
+          }
+        }
+      }
+
+    }
+  }
+
+  .new-pagination {
+    margin-top: 45px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    *{
+      color: black;
+    }
+  }
+  .url_to_remove{
+    color: #D41317;
+  }
+  @media screen and (max-width: 768px){
+    .container-{{ id }}{
+      padding-block: 20px;
+    }
+  }
+</style>
+
+<div class="sec-{{ id }}" id="{{ section.id }}">
+  {% paginate collection.products by 24 %}
+    <div class="filter-and-sorting-wrapper">
+      <div class="page-width">
+        <div class="filter-and-sorting">
+          <div class="filter-wrapper">
+            <div class="filter-button">
+              {% render 'filter-icon' %}
+              <h3>Filter</h3>
+            </div>
+            {% render 'new-filter', collection: collection, section: section %}
+          </div>
+          <div style="visibility: hidden;" class="product-count">
+            {% if paginate.current_page < paginate.pages %}
+              <p>Showing {{ paginate.page_size }} out of {{ paginate.items }} products</p>
+            {% else %}
+              <p>Showing {{ paginate.items | minus: paginate.current_offset }} out of {{ paginate.items }} products</p>
+            {% endif %}
+          </div>
+          <div class="sorting-wrapper">
+            <sorting-el>
+              <form>
+                <h3>Sort by:</h3>
+                <select name="sort_by" id="sort-by">
+                  {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+                  {% for option in collection.sort_options %}
+                    <option
+                      value="{{ option.value }}"
+                      {% if option.value == sort_by %}
+                        selected="selected"
+                      {% endif %}
+                    >
+                      {{ option.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </form>
+            </sorting-el>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-{{ id }} {% unless section.settings.full_width %}page-width{% endunless %}">
+      <div class="wrapper-{{ id }}">
+        <div class="new-product-grid">
+          {% for product in collection.products %}
+            {% render 'product-card', product: product, forloop: forloop %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="new-pagination">{{ paginate | default_pagination }}</div>
+    </div>
+  {% endpaginate %}
+</div>
+
+<script src="{{ 'filter.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Products Grid New",
+  "templates": ["collection"],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+
+  ],
+  "presets": [
+    {
+      "name": "Products Grid New"
+    }
+  ]
+}
+{% endschema %}

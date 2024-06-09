@@ -1,0 +1,135 @@
+/* Search Input part */
+  .search-input-form{
+    position: relative;
+  }
+  .search-input-wrapper{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 78.5%;
+    margin: 0 auto;
+  }
+  .search-input-wrapper input{
+    background: #F5F5F5;
+    min-width: 453px;
+    padding: 12px 10px 12px 48px;
+    color: #000;
+    font-size: 16px;
+    line-height: normal;
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+  .search-input-wrapper input::placeholder{
+    color: #BFBFBF;
+    font-size: 13px;
+    line-height: normal;
+  }
+  .search-input-wrapper  input[type="search"]::-webkit-search-cancel-button {
+   -webkit-appearance: none;
+    height: 1em;
+    width: 1em;
+    border-radius: 50em;
+    background: url(https://pro.fontawesome.com/releases/v5.10.0/svgs/solid/times-circle.svg) no-repeat 50% 50%;
+    background-size: contain;
+    position: relative;
+    right: 15px;
+
+  }
+  .search-input-wrapper  > button{
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+  .search-input-wrapper button span{
+     display: inline-block;
+  }
+
+  .close-search-drawer{
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    font-size: 0;
+    line-height: 0;
+  }
+  .close-search-drawer svg path{
+    stroke: #000;
+  }
+   @media screen and (min-width: 1201px){
+     predictive-search{
+      position: fixed;
+      display: none;
+      top: 0px;
+      z-index: 1000;
+      background: #fff;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+      width: 100%;
+      padding: 20px 0;
+      transition: all 0.3s;
+     }
+     [search-drawer-opened] predictive-search{
+       display: block;
+     }
+    .search-input-wrapper input {
+      min-width: 100%;
+      padding: 20px 10px 20px 48px;
+    }
+   .close-search-drawer{
+      top: 38px;
+      right: 8%;
+    }
+  }
+  @media screen and (max-width: 1200px){
+    predictive-search{
+      position: fixed;
+      top: 0;
+      z-index: 99;
+      background: #fff;
+      width: 100%;
+      padding: 60px 0 16px;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+      height: 100vh;
+      transform: translateX(100%);
+      transition: all 0.3s;
+    }
+    [search-drawer-opened] predictive-search{
+      transform: translateX(0);
+    }
+    .search-input-wrapper {
+      position: relative;
+      max-width: 95%;
+      margin: 0 auto;
+      min-width: 95%;
+    }
+    .search-input-wrapper input {
+      background: rgba(234, 9, 75, 0.05);
+      min-width: 100%;
+      padding: 14px 10px 14px 48px;
+      color: #000;
+      font-size: 13px;
+      line-height: normal;
+      border: none;
+      outline: none;
+      box-shadow: none;
+    }
+    .search-input-wrapper  > button {
+      top: 0;
+      transform: translateY(25%);
+    }
+    .close-search-drawer{
+      top: 20px;
+      right: 15px;
+    }
+  }
+</style>
+/* Search Input part */
+
+

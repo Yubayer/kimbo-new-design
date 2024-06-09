@@ -1,0 +1,303 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+  .cart-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+  }
+  
+  h1 {
+      text-align: center;
+  }
+  
+  .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+  }
+  
+  .cart-item img {
+      max-width: 100px;
+      margin-right: 20px;
+  }
+  
+  .item-details {
+      flex-grow: 1;
+  }
+  
+  .item-details h2 {
+      margin: 0;
+  }
+  
+  .quantity-controls {
+      display: flex;
+      align-items: center;
+  }
+  
+  .quantity-controls button {
+      background-color: #ddd;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+  }
+  
+  .item-quantity {
+      width: 50px;
+      text-align: center;
+      margin: 0 5px;
+  }
+  
+  .remove-item {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+  }
+  
+  .cart-summary {
+      text-align: right;
+      margin-top: 20px;
+  }
+  
+  #checkout-button {
+      background-color: #ff0000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+  }
+</style>
+
+
+<div class="sec-{{ id }}">
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+     <div class="cart-container">
+        <h1>CART</h1>
+        {% if cart.item_count == 0 %}
+            <p>Your cart is empty</p>
+        {% else %}
+            <p>You are {{ 30.00 | minus: cart.total_price | money }} away from free shipping</p>
+            <div id="cart-items">
+                {% for item in cart.items %}
+                <div class="cart-item" data-line="{{ forloop.index }}">
+                    <img width="100%" height="100%" src="{{ item.image | img_url: 'master' }}" alt="{{ item.title }}">
+                    <div class="item-details">
+                        <h2>{{ item.title }}</h2>
+                        <p>{{ item.price | money }}</p>
+                        <div class="quantity-controls">
+                            <button class="decrease-quantity">-</button>
+                            <input type="number" value="{{ item.quantity }}" class="item-quantity">
+                            <button class="increase-quantity">+</button>
+                        </div>
+                        <button class="remove-item">Remove</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="cart-summary">
+                <p>Total: {{ cart.total_price | money }}</p>
+                <button id="checkout-button">Proceed to Checkout</button>
+            </div>
+        {% endif %}
+     </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function() {
+      const cartItems = document.querySelectorAll('.cart-item');
+      cartItems.forEach(item => {
+          const removeButton = item.querySelector('.remove-item');
+          const quantityInput = item.querySelector('.item-quantity');
+          const increaseButton = item.querySelector('.increase-quantity');
+          const decreaseButton = item.querySelector('.decrease-quantity');
+  
+          removeButton.addEventListener('click', function() {
+              const line = item.dataset.line;
+              updateCart(line, 0);
+          });
+  
+          increaseButton.addEventListener('click', function() {
+              const line = item.dataset.line;
+              quantityInput.value = parseInt(quantityInput.value) + 1;
+              updateCart(line, quantityInput.value);
+          });
+  
+          decreaseButton.addEventListener('click', function() {
+              const line = item.dataset.line;
+              if (quantityInput.value > 1) {
+                  quantityInput.value = parseInt(quantityInput.value) - 1;
+                  updateCart(line, quantityInput.value);
+              }
+          });
+  
+          quantityInput.addEventListener('change', function() {
+              const line = item.dataset.line;
+              updateCart(line, quantityInput.value);
+          });
+      });
+  
+      function updateCart(line, quantity) {
+          fetch('/cart/change.js', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  line: line,
+                  quantity: quantity
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.items.length === 0) {
+                  location.reload();
+              } else {
+                  const item = document.querySelector(`.cart-item[data-line="${line}"]`);
+                  if (quantity == 0) {
+                      item.remove();
+                  } else {
+                      item.querySelector('.item-quantity').value = quantity;
+                  }
+                  document.querySelector('.cart-summary p').textContent = `Total: ${Shopify.formatMoney(data.total_price)}`;
+              }
+          });
+      }
+  });
+
+</script>
+{% schema %}
+  {
+    "name": "Cart Section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "full_width",
+        "label": "Full Width Section",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Section Spacing Desktop"
+      },
+      {
+        "type": "range",
+        "id": "margin_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Top",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "margin_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Bottom",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Top",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 0
+      },
+      {
+        "type": "header",
+        "content": "Section Spacing Mobile"
+      },
+      {
+        "type": "range",
+        "id": "margin_top_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Top",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "margin_bottom_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Bottom",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "padding_top_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Top",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 0
+      }
+    ],
+    "presets": [
+      {
+        "name": "Cart Section"
+      }
+    ]
+  }
+{% endschema %}

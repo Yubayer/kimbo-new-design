@@ -1,0 +1,301 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    background: #F5F5F5;
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+  .texts-{{ id }} h2{
+    color: var(--Color-Text-main, #111827);
+    font-size: 72px;
+    line-height: 66px; /* 91.667% */
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+  .texts-{{ id }} a{
+    display: inline-block;
+    color: #FFF;
+    text-align: center;
+    font-size: 20px;
+    line-height: 20px; /* 100% */
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 14px 65px;
+    background: #D41317;
+  }
+  .lists-{{ id }} .list-item-{{ id }}:not(:last-child){
+    margin: 0 0 28px;
+  }
+  .list-item-{{ id }}{
+    display: flex;
+    gap: 24px;
+  }
+  .list-item-{{ id }} .list-count-{{ id }}{
+    color: var(--Color-Text-main, #111827);
+    font-size: 40px;
+    line-height: 36px; /* 90% */
+    position: relative;
+  }
+  .lists-{{ id }} .list-item-{{ id }}:not(:last-child) span{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,0);
+    height: 70%;
+    width: 0.5px;
+    background: #E6E6E6;
+  }
+  .list-item-{{ id }} h4{
+    color: var(--Color-Text-main, #111827);
+    font-size: 40px;
+    line-height: 36px; /* 90% */
+    margin: 0 0 16px;
+  }
+  .list-item-{{ id }} p{
+    color: var(--Color-Text-Base, #465367);
+    font-size: 16px;
+    line-height: 24px; /* 150% */
+    letter-spacing: -0.32px;
+    margin: 0;
+  }
+  @media screen and (min-width: 769px){
+    .wrapper-{{ id }}{
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      grid-gap: 80px;
+    }
+  }
+
+  @media screen and (max-width: 768px){
+    .texts-{{ id }}{
+      margin: 0 0 30px;
+    }
+   .texts-{{ id }} h2{
+      font-size: 40px;
+      line-height: 44px; /* 91.667% */
+    }
+    .texts-{{ id }} a{
+      width: clamp(100%, 300px, 400px);
+      padding: 10px 30px;
+    }
+    .lists-{{ id }} .list-item-{{ id }}:not(:last-child){
+      margin: 0 0 18px;
+    }
+    .list-item-{{ id }} .list-count-{{ id }}{
+      font-size: 24px;
+      line-height: 28px; /* 90% */
+    }
+    .lists-{{ id }} .list-item-{{ id }}:not(:last-child) span{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,0);
+      height: 70%;
+      width: 0.5px;
+      background: #E6E6E6;
+    }
+    .list-item-{{ id }} h4{
+      font-size: 24px;
+      line-height: 28px; /* 90% */
+      margin: 0 0 10x;
+    }
+    .list-item-{{ id }} p{
+      font-size: 14px;
+      line-height: 18px; /* 150% */
+    }
+  }
+
+</style>
+
+
+<div class="sec-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}" {% if settings.animations_reveal_on_scroll %} data-cascade {% endif %}>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+      <div class="texts-{{ id }}">
+        {% if section.settings.heading != blank %}
+          <h2>{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.btn_text != blank %}
+          <a href="{{ section.settings.link }}">{{ section.settings.btn_text }}</a>
+        {% endif %}
+      </div>
+      <div class="lists-{{ id }}">
+        {% for block in section.blocks %}
+          <div class="list-item-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+              style="--animation-order: {{ forloop.index }};"
+            {% endif %}
+          >
+            <div class="list-count-{{ id }}">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}<span></span></div>
+            <div>
+              {% if block.settings.title != blank %}
+                <h4>{{ block.settings.title }}</h4>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <p>{{ block.settings.text }}</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Text Lists",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "full_width",
+        "label": "Full Width Section",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "heading",
+        "label": "heading",
+        "default": "Subscribe & Save 10% off each of your order"
+      },
+      {
+        "type": "text",
+        "id": "btn_text",
+        "label": "Button Text",
+        "default": "SHOP NOW"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "Button Link"
+      },
+      {
+        "type": "header",
+        "content": "Section Spacing Desktop"
+      },
+      {
+        "type": "range",
+        "id": "margin_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Top",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "margin_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Bottom",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Top",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 0
+      },
+      {
+        "type": "header",
+        "content": "Section Spacing Mobile"
+      },
+      {
+        "type": "range",
+        "id": "margin_top_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Top",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "margin_bottom_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Margin Bottom",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "padding_top_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Top",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom_m",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 0
+      }
+    ],
+    "blocks": [
+      {
+        "type": "item",
+        "name": "Item",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "text"
+          },
+          {
+            "type": "textarea",
+            "id": "text",
+            "label": "Text"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Text Lists"
+      }
+    ]
+  }
+{% endschema %}

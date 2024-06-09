@@ -1,0 +1,207 @@
+{% comment %}
+<ul class="parent">
+  {% for link in menu.links %}
+    <li {% if link.active %}class="active {% if link.child_active %}child-active{% endif %}"{% endif %}><a href="{{ link.url }}">{{ link.title }}{% if link.links != blank %}{% render 'all-icons', name: "down-arrow" %}{% endif %}</a>
+      {% if link.links != blank %}
+        <ul class="child">
+          {% for child_link in link.links %}  
+            <li {% if child_link.active %}class="active {% if child_link.child_active %}child-active{% endif %}"{% endif %}><a href= "{{ child_link.url }}">{{ child_link.title }}</a>
+              {% if child_link.links != blank %}
+                <ul class="grandchild">
+                  {% for grandchild_link in child_link.links %}  
+                    <li {% if grandchild_link.active %}class="active {% if grandchild_link.child_active %}child-active{% endif %}"{% endif %}><a href= "{{ grandchild_link.url }}">{{ grandchild_link.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}   
+            </li>
+          {% endfor %}
+        </ul> 
+      {% endif %} 
+    </li>
+  {% endfor %}
+</ul>
+{% endcomment %}
+
+
+
+<div class="m-header__menu{% if custom_classes != blank %} {{ custom_classes }}{% endif %}">
+  <ul class="m-menu">
+    {% for link in menu.links %}
+      {% liquid
+        assign li_class = 'm-menu__item'
+        assign is_mega = true
+
+        assign title_handle = link.title | handleize
+        assign has_mega_item = false
+      %}
+      {% for block in section.blocks %}
+          {% liquid
+            assign menu_title = block.settings.heading | handleize
+
+            if menu_title == blank or menu_title != title_handle
+              continue
+            endif
+          %}
+          {% if menu_title == title_handle %}
+            {% liquid
+              assign has_mega_item = true
+            %}
+
+            {% case block.type %}
+  
+              {% when 'collection-list' %}
+                {% liquid
+                  assign collection_ids = 'collection_1,collection_2,collection_3,collection_4,collection_5,collection_6' | split: ','
+                  assign content_empty = true
+
+                  for collection_id in collection_ids
+                    if block.settings[collection_id] != blank
+                      assign content_empty = false
+                    endif
+                  endfor
+                %}
+                {% capture block_type %}
+                  {% unless content_empty %}
+                    <div class="m-mega-collection-list" data-id="{{ block.id }}">
+                      <div class="m-mega-collection-list__wrapper">
+                        {% for collection_id in collection_ids %}
+                          {% liquid
+                            if block.settings[collection_id] == blank
+                              continue
+                            endif
+                            assign collection_handle = block.settings[collection_id]
+                            assign collection = collections[collection_handle]
+                            assign collection_image = collection.image
+                            assign image_id = 'image_' | append: forloop.index
+
+                            if block.settings[image_id] != blank
+                              assign collection_image = block.settings[image_id]
+                            endif
+
+                            assign all_products_count = collection.all_products_count
+                          %}
+                          <div class="m-mega-item">
+                            <div class="m-collection-card m-collection-card--standard">
+                              <div class="m-collection-card__inner">
+                                <a href="{{ collection.url | default: "#" }}" class="m-collection-card__image">
+                                  {% if collection_image != blank %}
+                                    {{ collection_image | image_url: width: 75 | image_tag }}
+                                  {% endif %}
+                                </a>
+                                <div class="m-collection-card__info">
+                                  <h3 class="m-collection-card__title">
+                                    <a href="{{ collection.url | default: "#" }}" class="m-collection-card__link">
+                                      {{ title | default: collection.title }}
+                                    </a>
+                                  </h3>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endunless %}
+                {% endcapture %}
+            {% endcase %}
+          {% endif %}
+      {% endfor %}
+      
+      {% liquid
+        assign has_child = false
+
+        if has_mega_item == false
+          assign is_mega = false
+        endif
+
+        if link.links != blank or block_type != blank
+          assign has_child = true
+          assign li_class = li_class | append: ' m-menu__item--parent'
+        endif
+
+        if link.links != blank
+          assign li_class = li_class | append: ' m-menu__item--has-submenu'
+
+          unless is_mega
+            assign li_class = li_class | append: ' m-menu__item--dropdown'
+          endunless
+        endif
+
+        if is_mega and has_child
+          assign li_class = li_class | append: ' m-menu__item--mega'
+        endif
+      %}
+
+      {% if link.links != blank %}
+          <li class="{{ li_class }}" data-index="{{ forloop.index0 }}">
+            <a href="{{ link.url }}" class="m-menu__link m-menu__link--main">
+              {{ link.title }}
+              <span class="m-menu__arrow">
+                {% render 'all-icons', name: "down-arrow" %}
+              </span>
+            </a>
+            
+            <div class="m-mega-menu">
+              <div class="m-mega-menu__container page-width-">
+                <div class="m-mega-menu__inner">
+                 {% if is_mega and block_type != blank %}
+                    <div class="m-mega-menu__content">
+                      <h4>Shop by category</h4>
+                      {{ block_type }}
+                    </div>
+                  {% endif %}
+                  <ul class="m-sub-menu m-sub-menu--level-1">
+                    {% for childlink in link.links %}
+                      <li class="m-sub-menu__item m-sub-menu__item--level-1">
+                        <a href="{{ childlink.url }}" class="m-menu__link">
+                          {{ childlink.title }}
+                          {% if is_mega == false and childlink.links != blank %}
+                            <span class="m-menu__sub-arrow">
+                              {% render 'all-icons', name: "down-arrow" %}
+                            </span>
+                          {% endif %}
+                        </a>
+                        {% if childlink.links != blank %}
+                          <div class="m-mega-menu__column">
+                            <ul class="m-sub-menu m-sub-menu--level-2">
+                              {% for grandlink in childlink.links %}
+                                <li class="m-sub-menu__item m-sub-menu__item--level-2">
+                                  <a href="{{ grandlink.url }}" class="m-menu__link">
+                                    {{ grandlink.title }}
+                                  </a>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </li>
+      {% else %}
+        <li class="{{ li_class }}" data-index="{{ forloop.index0 }}">
+          <a href="{{ link.url }}" class="m-menu__link m-menu__link--main">
+            {{ link.title }}
+            {% if is_mega and block_type != blank %}
+              <span class="m-menu__arrow">
+                {% render 'all-icons', name: "down-arrow" %}
+              </span>
+            {% endif %}
+          </a>
+          {% if is_mega and block_type != blank %}
+            <div class="m-mega-menu">
+              <div class="m-mega-menu__container">
+                <div class="m-mega-menu__inner">
+                  {{ block_type }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>

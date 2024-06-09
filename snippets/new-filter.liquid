@@ -1,0 +1,134 @@
+{{ 'filter.css' | asset_url | stylesheet_tag }}
+
+<div class="filter--container">
+  <filter-sorting data-section-id="{{ section.id }}">
+    <div class="filter--wrapper">
+      <div class="filter-heading">
+        <h3>Filter</h3>
+        <button class="close-drawer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6L18 18" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <form>
+        {%- for filter in collection.filters -%}
+          <details open>
+            <summary>
+              <div class="filter-label">
+                <div>
+                  <span>{{ filter.label }}</span>
+
+                  {%- if filter.active_values.size > 0 -%}
+                    <span>({{ filter.active_values.size }})</span>
+                  {%- endif -%}
+                </div>
+                {% render 'chevron-down-icon' %}
+              </div>
+            </summary>
+
+            <div class="options-wrapper">
+              <div class="hidden">
+                {%- if filter.active_values.size > 0 -%}
+                  <a class="url_to_remove" href="{{ filter.url_to_remove }}">Reset</a>
+                {%- endif -%}
+              </div>
+              {%- case filter.type -%}
+                {%- when 'boolean' -%}
+                  <ul>
+                    <li>
+                      <label for="Filter-{{ filter.param_name }}-{{ filter.true_value.value }}">
+                        <input
+                          type="checkbox"
+                          name="{{ filter.param_name }}"
+                          value="{{ filter.true_value.value }}"
+                          id="Filter-{{ filter.param_name }}"
+                          {% if filter.true_value.active -%}
+                            checked
+                          {%- endif %}
+                          {% if filter.true_value.count == 0 and filter.true_value.active == false -%}
+                            disabled
+                          {%- endif -%}
+                        >
+                        {{- filter.true_value.label -}}
+                      </label>
+                    </li>
+                    <li>
+                      <label for="Filter-{{ filter.param_name }}-{{ filter.false_value.value }}">
+                        <input
+                          type="checkbox"
+                          name="{{ filter.param_name }}"
+                          value="{{ filter.false_value.value }}"
+                          id="Filter-{{ filter.param_name }}"
+                          {% if filter.false_value.active -%}
+                            checked
+                          {%- endif %}
+                          {% if filter.false_value.count == 0 and filter.false_value.active == false -%}
+                            disabled
+                          {%- endif %}
+                        >
+                        {{- filter.false_value.label -}}
+                      </label>
+                    </li>
+                  </ul>
+
+                {%- when 'list' -%}
+                  <ul>
+                    {%- for filter_value in filter.values -%}
+                      <li>
+                        <input
+                          type="checkbox"
+                          name="{{ filter_value.param_name }}"
+                          value="{{ filter_value.value }}"
+                          id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                          {% if filter_value.active -%}
+                            checked
+                          {%- endif %}
+                          {% if filter_value.count == 0 and filter_value.active == false -%}
+                            disabled
+                          {%- endif %}
+                        >
+                        <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                          <h3>{{ filter_value.label }}</h3>
+                          <h3>[{{ filter_value.count }}]</h3>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+
+                {%- when 'price_range' -%}
+                  <div class="filter-group-display__price-range">
+                    {% render 'price-range-slider', filter: filter %}
+                  </div>
+              {%- endcase -%}
+            </div>
+          </details>
+        {%- endfor -%}
+
+        <div>
+          <a class="url_to_remove" href="{{ collection.url }}?sort_by={{ collection.sort_by }}">Clear all</a>
+
+          {% comment %}
+            {%- for filter in collection.filters -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value != null or filter.max_value.value != null -%}
+                  <a class="url_to_remove" href="{{ filter.url_to_remove }}">
+                    {%- assign min_value = filter.min_value.value | default: 0 -%}
+                    {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+                    {{ min_value | money }} - {{ max_value | money }} X
+                  </a>
+                {%- endif -%}
+              {%- else -%}
+                {%- for filter_value in filter.active_values -%}
+                  <a class="url_to_remove" href="{{ filter_value.url_to_remove }}">
+                    {{ filter.label }}: {{ filter_value.label }} X
+                  </a>
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {% endcomment %}
+        </div>
+      </form>
+    </div>
+  </filter-sorting>
+</div>

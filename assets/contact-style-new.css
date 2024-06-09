@@ -1,0 +1,88 @@
+.custom-label{
+  color: #000;
+  /* font-family: "Rethink Sans"; */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.contact__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-column-gap: 2rem;
+}
+
+.kimbo-contact .contact{
+    max-width: 400px;
+    margin: auto;
+}
+.kimbo-contact .title{
+    color: #000;
+    font-size: 72px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 66px;
+    text-transform: capitalize;
+    margin-bottom: 40px;
+    text-align: center;
+    @media(max-width: 7668px){
+      color: #000;
+      /* font-family: "Bebas Neue"; */
+      font-size: 40px;
+      font-style: normal;
+      font-weight: 400;
+      margin-bottom: 24px;
+      line-height: 44px;
+    }
+}
+  .kimbo-contact .field__label, .kimbo-contact .customer .field label {
+
+    font-size: 1.6rem;
+    left: 0;
+    top: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: top var(--duration-short) ease,font-size var(--duration-short) ease;
+    color: rgba(var(--color-foreground),.75);
+    letter-spacing: .1rem;
+    line-height: 1.5;
+    transform: translate(0, -30px);
+    color: #000;
+    /* font-family: "Rethink Sans"; */
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+.kimbo-contact .field__input:focus-visible {
+      box-shadow: inherit;
+}
+.kimbo-contact .field__input{ 
+    border: 1px solid #E6E6E6;
+    background: #fafafa;
+    min-height: 48px;
+    font-family: rethink-sans!important;
+    text-transform: lowercase;
+    box-sizing: border-box;
+    width: 99%;  
+}
+.kimbo-contact textarea.field__input{
+    min-height: 160px !important;
+}
+.kimbo-contact .field:before,.kimbo-contact .field:after{
+  box-shadow: unset;
+}
+
+/* .contact .field__input::placeholder,
+.contact  .field input::placeholder{
+  font-size: 1.3rem;
+  line-height: normal;
+  letter-spacing: .04rem;
+  opacity: 1 !important;
+}
+.contact .field__input:focus::placeholder,
+.contact .field input:focus::placeholder {
+  opacity: 0.4 !important;
+} */

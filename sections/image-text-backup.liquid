@@ -1,0 +1,314 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+  }
+
+  @media(max-width: 1200px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+
+  .texts-{{ id }}{
+    display: flex;
+    align-items: center;
+    padding: 0px 50px 0px 50px;
+  }
+  .texts-wrapper-{{ id }} h4{
+    color: #000;
+    font-size: 24px;
+    line-height: 24px; /* 100% */
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .texts-wrapper-{{ id }} h2{
+    color: #000;
+    font-size: 72px;
+    line-height: 72px; /* 100% */
+    letter-spacing: -2px;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .texts-wrapper-{{ id }} p{
+    color: #000;
+    font-size: 16px;
+    line-height: 24px; /* 120% */
+    margin: 0 0 24px;
+  }
+  .texts-wrapper-{{ id }} a{
+    display: inline-block;
+    color: #FFF;
+    text-align: center;
+    font-size: 20px;
+    line-height: 20px; /* 100% */
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 14px 65px;
+    background: #D41317;
+  }
+  .img-{{ id }}{
+    font-size: 0;
+    line-height: 0;
+  }
+  .img-{{ id }} img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media screen and (min-width: 1201px){
+    #shopify-section-{{id}}{
+      background: #F5F5F5;
+    }
+    .wrapper-{{ id }}{
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+    }
+    .texts-{{ id }}{
+      background: #F5F5F5;
+    }
+  }
+  @media screen and (max-width: 1200px){
+    .wrapper-{{ id }}{
+      /* grid-template-columns: 1fr;
+      grid-template-rows: auto auto; */
+      position: relative;
+    }
+    /* .img-{{ id }}{
+      grid-row: 1/2;
+    }
+    */
+    .texts-{{ id }}{
+      padding: 16px 20px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,53%);
+
+      /* grid-row: 2/-1; */
+    }
+    .texts-wrapper-{{ id }} h4{
+      font-size: 20px;
+      line-height: 20px; /* 100% */
+      color: #fff;
+      margin: 0 0 12px;
+    }
+    .texts-wrapper-{{ id }} h2{
+      font-size: 40px;
+      line-height: 44px; /* 100% */
+      color: #fff;
+      letter-spacing: -1.12px;
+      margin: 0 0 16px;
+    }
+    .texts-wrapper-{{ id }} p{
+      font-size: 14px;
+      line-height: 18px; /* 120% */
+      color: #fff;
+    }
+    .texts-wrapper-{{ id }} a{
+      width: clamp(100%, 300px, 400px);
+      padding: 10px 30px;
+    }
+  }
+</style>
+
+<div class="sec-{{ id }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+  {% if settings.animations_reveal_on_scroll %}
+    data-cascade
+    style="--animation-order: 1;"
+  {% endif %}
+>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+      <div class="texts-{{ id }}">
+        <div class="texts-wrapper-{{ id }}">
+          {% if section.settings.subtitle != blank %}
+            <h4>{{ section.settings.subtitle }}</h4>
+          {% endif %}
+          {% if section.settings.title != blank %}
+            <h2>{{ section.settings.title }}</h2>
+          {% endif %}
+          {% if section.settings.text != blank %}
+            <p class="rethink-sans">{{ section.settings.text }}</p>
+          {% endif %}
+          {% if section.settings.btn_text != blank %}
+            <a href="{{ section.settings.link | default: '#' }}">{{ section.settings.btn_text }}</a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="img-{{ id }}">
+        {% unless section.settings.image == blank %}
+          <picture>
+            <source media="(min-width:1200px)" srcset="{{ section.settings.image | image_url: width: 700 }}">
+            <source media="(min-width:769px)" srcset="{{ section.settings.image | image_url: width: 800 }}">
+            {% unless section.settings.image_mobile == blank %}
+              {{ section.settings.image_mobile | image_url: width: 500 | image_tag }}
+            {% else %}
+              {{ section.settings.image | image_url: width: 500 | image_tag }}
+            {% endunless %}
+          </picture>
+        {% endunless %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Image Texts Backup",
+  "class": "lazyload",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Select Image (Desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Select Image (Mobile)"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Sub Title",
+      "default": "The Taste of naples italy, Right at Home"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Discover Delicious Coffee You'll Love"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Warm up your mornings with our smooth, authentic Italian coffee, made easy."
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Texts Backup"
+    }
+  ]
+}
+{% endschema %}

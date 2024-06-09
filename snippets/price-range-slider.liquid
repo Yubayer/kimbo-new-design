@@ -1,0 +1,220 @@
+{% liquid
+  assign max_priceAmount = filter.range_max | money_without_currency | replace: ',', ''
+
+  if filter.max_value.value
+    if uses_comma_decimals
+      assign maxValue = filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
+    else
+      assign maxValue = filter.max_value.value | money_without_currency | replace: ',', ''
+    endif
+  endif
+
+  if filter.min_value.value
+    if uses_comma_decimals
+      assign minValue = filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
+    else
+      assign minValue = filter.min_value.value | money_without_currency | replace: ',', ''
+    endif
+  endif
+
+  if minValue == blank
+    assign minValue = 0
+  endif
+
+  if maxValue == blank
+    assign maxValue = max_priceAmount
+  endif
+
+  assign parcent1 = minValue | divided_by: max_priceAmount | times: 100
+  assign parcent2 = maxValue | divided_by: max_priceAmount | times: 100
+%}
+
+<style>
+  :root
+  {
+    --range-circle: #EEF2FF;
+    --circle-border: #8B2C45;
+    --range-line: #EEF2FF;
+    --range-active-line: #8B2C45;
+    --range-circle-height: 24px;
+    --range-line-height: 8px;
+    --range-circle-mt: calc((var(--range-circle-height) / 2 - var(--range-line-height) / 2) * -1);
+
+    @media(max-width: 500px) {
+      --range-circle-height: 18px;
+      --range-line-height: 5px;
+      --range-circle-mt: calc((var(--range-circle-height) / 2 - var(--range-line-height) / 2) * -1);
+    }
+  }
+
+  .price-filter-vertical {
+    display: none;
+  }
+
+  .range-slider-wrapper {
+    position: relative;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 0;
+    border-radius: 10px;
+    margin-top: var(--range-circle-mt);
+  }
+
+  .range-slider-container {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin-top: 0;
+  }
+
+  .range-slider-container input[type="range"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
+    outline: none;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    background-color: transparent;
+    pointer-events: none;
+  }
+
+  .range-slider-track:empty {
+    display: block;
+  }
+
+  .range-slider-track {
+    width: 100%;
+    height: var(--range-line-height);
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    border-radius: 5px;
+    background: linear-gradient(to right, var(--range-line) {{ parcent1 | append: '%' }}, var(--range-active-line) {{ parcent1 | append: '%' }}, var(--range-active-line) {{ parcent2 | append: '%' }}, var(--range-line) {{ parcent2 | append: '%' }});
+  }
+
+  .range-slider-container input[type="range"]::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    height: var(--range-line-height);
+  }
+
+  .range-slider-container input[type="range"]::-moz-range-track {
+    -moz-appearance: none;
+    height: var(--range-line-height);
+  }
+
+  .range-slider-container input[type="range"]::-ms-track {
+    appearance: none;
+    height: var(--range-line-height);
+  }
+
+  .range-slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: var(--range-circle-height);
+    width: var(--range-circle-height);
+    background-color: var(--range-circle);
+    cursor: pointer;
+    margin-top: var(--range-circle-mt);
+    pointer-events: auto;
+    border-radius: 50%;
+    border: 1px solid var(--circle-border);
+  }
+
+  .range-slider-container input[type="range"]::-moz-range-thumb {
+    -webkit-appearance: none;
+    height: var(--range-circle-height);
+    width: var(--range-circle-height);
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: var(--range-circle);
+    pointer-events: auto;
+  }
+
+  .range-slider-container input[type="range"]::-ms-thumb {
+    appearance: none;
+    height: var(--range-circle-height);
+    width: var(--range-circle-height);
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: var(--range-circle);
+    pointer-events: auto;
+  }
+
+  .range-slider-container input[type="range"]:active::-webkit-slider-thumb {
+    background-color: var(--circle-border);
+    border: 1px solid var(--circle-border);
+  }
+
+  .rander-slider-values {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .rander-slider-values input[type=number] {
+    background: #080808;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 6px 2px 6px 10px;
+    width: max-content;
+    color: white;
+    font-size: 15px;
+  }
+
+  .range-current-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    div{
+      border-radius: 4px;
+      border: 1px solid #EBEBEB;
+      background: #F5F5F5;
+      box-sizing: border-box;
+      padding: 8px 12px;
+      p{
+        margin: 0;
+        color: #8B2C45;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 16px;
+      }
+    }
+  }
+
+  .active-range-circle {
+    z-index: 9;
+  }
+</style>
+<div class="range-slider-wrapper">
+  <div class="range-slider-container">
+    <div class="range-slider-track"></div>
+    <input
+      type="range"
+      min="0"
+      max="{{ max_priceAmount }}"
+      value="{{ minValue }}"
+      id="slider-1"
+      name="{{ filter.min_value.param_name }}"
+    >
+    <input
+      type="range"
+      min="0"
+      max="{{ max_priceAmount | round }}"
+      value="{{ maxValue | round }}"
+      id="slider-2"
+      name="{{ filter.max_value.param_name }}"
+    >
+  </div>
+  <div class="range-current-price">
+    <div>
+      <p>{{ minValue | abs }}</p>
+    </div>
+    <div>
+      <p>{{ maxValue | abs }}</p>
+    </div>
+  </div>
+</div>
